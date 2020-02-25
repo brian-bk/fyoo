@@ -1,18 +1,25 @@
+from pathlib import Path
 import shutil
 
 import fyoo
-from fyoo.ext.common.resource import DummyResource
 
 
 @fyoo.argument('--message')
-@fyoo.resource(DummyResource)
 @fyoo.flow()
 def hello(
         message: str,
-        dummy: str,
 ) -> None:
-    print(f'Hello {dummy} resource, {message}')
-    return 'hello'
+    print(message)
+
+
+@fyoo.argument('filename')
+@fyoo.flow()
+def touch(
+        filename: str,
+) -> str:
+    path = Path(filename)
+    path.touch()
+    return str(path.absolute())
 
 
 @fyoo.argument('target')

@@ -8,47 +8,45 @@ Welcome to Fyoo's documentation!
 
 Fyoo is a consistent, extendable, templated CLI for dataflow operations.
 Fyoo makes sure that the individual tasks in data orchestration behave
-transparently, so that every building block is understood.
+in the same way, so that every building block is easily understood
+and glued together.
 
-In addition, Fyoo Flows are easy to write with templatizing and resources built in.
-You can focus on how you will move data, and less about the same boilerplate pipeline
-code.
+CLI Examples
+````````````
 
-Quick Examples
-``````````````
+Templated Arguments
++++++++++++++++++++
 
-Pass in context from arguments::
+The simplest flow (subparser) built in is `hello`, which
+has an optional argument for the message. All arguments
+on the flow are templated, if they are strings.
 
-   fyoo \
-      --jinja-context='{"a": "A value!"}' \
-      hello \
-      --message='well there is {{ a }}'
+.. code-block:: bash
 
-Output metadata as json::
+   fyoo hello --message 'The date is {{ date() }}'
+   # The date is 2020-02-25
 
-   touch file.txt
-   fyoo \
-      --flow-report-file=out.json \
-      move \
-      file.txt \
-      'file_{{ datetime.now().strftime("%Y%m%d") }}.txt'
-   cat out.json | python -m json.tool
-   {
-       "metadata": {
-           "start": "2020-02-24T00:05:46.183910",
-           "end": "2020-02-24T00:05:46.184036",
-           "duration": 0.00012564659118652344,
-           "flow": {
-               "name": "move",
-               "file": "/home/somebody/fyoo/fyoo/ext/common/flow.py"
-           }
-       },
-       "kwargs": {
-           "source": "file.txt",
-           "target": "file_20200224.txt"
-       },
-       "result": null
-   }
+But arguments on Fyoo precurse the Flow subcommand, so
+you can provide context in the same way on every different
+Flow.
+
+.. code-block:: bash
+
+
+    # Arguments to fyoo will always be the same, 
+    # to the flow may be different
+    fyoo --jinja-context='{"a": "any_var"}' \
+      hello --message 'Hello {{ a }}'
+
+    fyoo --jinja-context='{"a": "any_var"}' \
+      touch '{{ a }}.txt'
+    ls -Ut | head -1
+    # any_var.txt
+
+Resources
++++++++++
+
+TODO!
 
 Design
 ``````
