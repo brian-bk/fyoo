@@ -1,0 +1,13 @@
+[run]
+omit =
+  env/*
+  venv/*
+  tests/*
+  fyoo/ext/mysql/*
+  fyoo/cli.py
+  fyoo/parser.py
+  fyoo/*/__init__.py
+  setup.py
+
+source =
+  .
