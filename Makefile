@@ -15,7 +15,7 @@ dev:
 		echo "Making virtualenv at venv" ; \
 		virtualenv -p python3 venv ; \
 	fi
-	./venv/bin/pip install -e .[dev]
+	./venv/bin/pip install -r requirements.txt
 	echo "Activate with . venv/bin/activate"
 
 docs:
