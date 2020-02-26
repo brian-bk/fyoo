@@ -80,8 +80,8 @@ Simply add to a ``fyoo.ini`` file, and run Fyoo from the same
 directory.
 
 .. code-block:: ini
-    :caption: fyoo.ini
-    :name: fyoo-ini
+
+    # fyoo.ini
 
     [postgres]
     username = postgres
@@ -114,8 +114,8 @@ We use the contents of a sql template file to run a
 query, and output to a csv file of the current date.
 
 .. code-block:: sql
-    :caption: range.tpl.sql
-    :name: range-tpl-sql
+
+    -- pg.tpl.sql
 
     {% for i in range(0, num) %}
       {% if not loop.first %}union all{% endif %}
