@@ -6,7 +6,7 @@ from configparser import SafeConfigParser
 from typing import Any, Dict, List, Optional
 
 CONFIG_ENV_VAR_REGEX = r'|'.join([
-    r'^FYOO',
+    r'^FYOO_',
     r'^PATH$',
     r'^PYTHONPATH$',
     r'^PWD$',

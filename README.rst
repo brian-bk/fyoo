@@ -9,17 +9,6 @@ Fyoo
 |Test status|
 |Code coverage|
 
-.. |PyPI Package| image:: https://img.shields.io/pypi/v/fyoo.svg
-   :target: https://pypi.python.org/pypi/fyoo/
-.. |Documentation| image:: https://readthedocs.org/projects/fyoo/badge/?version=develop
-    :target: https://fyoo.readthedocs.io/en/develop/?badge=develop
-    :alt: Documentation Status
-.. |Git tag| image:: https://img.shields.io/github/tag/brian-bk/fyoo.svg
-   :target: https://github.com/brian-bk/fyoo/commit/
-.. |Test status| image:: https://circleci.com/gh/brian-bk/fyoo/tree/develop.svg?style=svg
-    :target: https://circleci.com/gh/brian-bk/fyoo/tree/develop
-.. |Code coverage| image:: https://codecov.io/gh/brian-bk/fyoo/branch/develop/graph/badge.svg
-    :target: https://codecov.io/gh/brian-bk/fyoo
 
 Fyoo is a consistent, extendable, templated CLI for dataflow operations.
 Fyoo makes sure that the individual tasks in data orchestration behave
@@ -35,9 +24,7 @@ You can install Fyoo from PyPI:
 
     pip install fyoo
 
-.. note::
-
-    `Pipenv <https://pipenv-fork.readthedocs.io>`_ is the best deterministic dependency tool for writing applications.
+Note: Pipenv_ is the best deterministic dependency tool for writing applications.
 
 Fyoo provides two main features for those using the Fyoo CLI:
 
@@ -198,3 +185,18 @@ with less optional arguments than the real version:
                 if not rows:
                     break
                 writer.writerows(rows)
+
+.. links
+
+.. |PyPI Package| image:: https://img.shields.io/pypi/v/fyoo.svg
+   :target: https://pypi.python.org/pypi/fyoo/
+.. |Documentation| image:: https://readthedocs.org/projects/fyoo/badge/?version=develop
+    :target: https://fyoo.readthedocs.io/en/develop/?badge=develop
+    :alt: Documentation Status
+.. |Git tag| image:: https://img.shields.io/github/tag/brian-bk/fyoo.svg
+   :target: https://github.com/brian-bk/fyoo/commit/
+.. |Test status| image:: https://circleci.com/gh/brian-bk/fyoo/tree/develop.svg?style=svg
+    :target: https://circleci.com/gh/brian-bk/fyoo/tree/develop
+.. |Code coverage| image:: https://codecov.io/gh/brian-bk/fyoo/branch/develop/graph/badge.svg
+    :target: https://codecov.io/gh/brian-bk/fyoo
+.. _Pipenv: https://pipenv-fork.readthedocs.io/
