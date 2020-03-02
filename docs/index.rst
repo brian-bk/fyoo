@@ -33,7 +33,7 @@ You can install Fyoo from PyPI:
 
 .. note::
 
-   Pipenv_ is the best deterministic dependency tool for writing applications.
+   Pipenv_ is the best deterministic dependency tool for building applications.
 
 Fyoo provides two main features for those using the Fyoo CLI:
 
@@ -98,12 +98,12 @@ directory.
 
     [postgres]
     username = postgres
-    password = %(POSTGRES_PASSWORD)s
+    password = %(FYOO_POSTGRES_PASSWORD)s
     host = 127.0.0.1
 
 .. code-block:: bash
 
-    POSTGRES_PASSWORD=supersecret \
+    FYOO_POSTGRES_PASSWORD=supersecret \
     fyoo \
       postgres_query_to_csv_file \
       'select {{ date() }} as d' out.csv
@@ -125,6 +125,7 @@ We use the contents of a sql template file to run a
 query, and output to a csv file of the current date.
 
 .. code-block:: sql
+    :force:
 
     -- table_counter.tpl.sql
 
@@ -136,7 +137,7 @@ query, and output to a csv file of the current date.
 
 .. code-block:: bash
 
-    POSTGRES_PASSWORD=supersecret \
+    FYOO_POSTGRES_PASSWORD=supersecret \
     fyoo \
       --jinja-context '{"num": 5}' \
       postgres_query_to_csv_file \
@@ -203,6 +204,7 @@ Complete Documentation
 
    usage
    cli
+   api
 
 
 Indices and tables

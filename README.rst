@@ -24,7 +24,7 @@ You can install Fyoo from PyPI:
 
     pip install fyoo
 
-Note: Pipenv_ is the best deterministic dependency tool for writing applications.
+Note: Pipenv_ is the best deterministic dependency tool for building applications.
 
 Fyoo provides two main features for those using the Fyoo CLI:
 
@@ -67,17 +67,15 @@ but the Flow subcommand may have any arguments it wishes.
 Resource Configuration
 ++++++++++++++++++++++
 
-.. note::
+Note: Run postgres in the background if you'd like to
+try the following examples:
 
-    Run postgres in the background if you'd like to
-    try the following examples:
+.. code-block:: bash
 
-    .. code-block:: bash
-
-        docker run --name fyoo-pg \
-          -e POSTGRES_PASSWORD=secretpass \
-          -p 5432:5432 \
-          -d postgres
+    docker run --name fyoo-pg \
+        -e POSTGRES_PASSWORD=secretpass \
+        -p 5432:5432 \
+        -d postgres
 
 Fyoo resources are configured in a single way for all Flows.
 Simply add to a ``fyoo.ini`` file, and run Fyoo from the same
@@ -89,12 +87,12 @@ directory.
 
     [postgres]
     username = postgres
-    password = %(POSTGRES_PASSWORD)s
+    password = %(FYOO_POSTGRES_PASSWORD)s
     host = 127.0.0.1
 
 .. code-block:: bash
 
-    POSTGRES_PASSWORD=supersecret \
+    FYOO_POSTGRES_PASSWORD=supersecret \
     fyoo \
       postgres_query_to_csv_file \
       'select {{ date() }} as d' out.csv
@@ -127,7 +125,7 @@ query, and output to a csv file of the current date.
 
 .. code-block:: bash
 
-    POSTGRES_PASSWORD=supersecret \
+    FYOO_POSTGRES_PASSWORD=supersecret \
     fyoo \
       --jinja-context '{"num": 5}' \
       postgres_query_to_csv_file \

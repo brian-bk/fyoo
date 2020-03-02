@@ -26,7 +26,7 @@ package:
 	python setup.py bdist_wheel
 
 lint:
-	pylint fyoo tests
+	pylint fyoo
 
 test:
 	coverage run -m pytest

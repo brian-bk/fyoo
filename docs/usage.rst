@@ -1,7 +1,7 @@
 .. _usage:
 
-Running Fyoo Flows
-==================
+Running the Fyoo CLI
+====================
 
 Basic Commands
 --------------
@@ -108,4 +108,9 @@ arguments ``--postgres-source`` and ``--postgres-target``.
       # let --postgres-source be postgres
       --postgres-target=a_cooler_postgres \
       'select 1'
- 
+
+Complete CLI Reference
+----------------------
+
+For details on every argument and built-in Flow subparser,
+see the :ref:`cli`.

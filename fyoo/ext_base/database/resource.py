@@ -5,14 +5,13 @@ from sqlalchemy.engine.url import URL
 from fyoo.resource import FyooResource
 
 
-# pylint: disable=abstract-method,attribute-defined-outside-init
+# pylint: disable=abstract-method
 class DatabaseResource(FyooResource):
 
     def open(self, **config) -> sqlalchemy.engine.Connection:
         url = URL(self.name, **config)
         engine = sqlalchemy.create_engine(url)
-        self.connection = engine.connect()
-        return self.connection
+        return engine
 
-    def close(self):
-        self.connection.close()
+    def close(self, asset: sqlalchemy.engine.Connection) -> None:
+        asset.close()

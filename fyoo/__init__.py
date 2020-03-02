@@ -1,7 +1,8 @@
 __version__ = '0.0.1rc1'
 
-from .decorators import (
+from .decorator import (
     flow,
     argument,
     resource,
 )
+from .resource import FyooResource

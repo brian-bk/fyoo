@@ -1,7 +1,7 @@
 .. _cli:
 
-Complete CLI Reference
-----------------------
+CLI Reference
+-------------
 
 This is the complete built-in Fyoo parser
 and Flow subparsers for Fyoo. You can always
