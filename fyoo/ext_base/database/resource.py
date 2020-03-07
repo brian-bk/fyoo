@@ -14,4 +14,4 @@ class DatabaseResource(FyooResource):
         return engine
 
     def close(self, asset: sqlalchemy.engine.Connection) -> None:
-        asset.close()
+        asset.dispose()

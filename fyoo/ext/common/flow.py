@@ -4,7 +4,7 @@ import shutil
 import fyoo
 
 
-@fyoo.argument('--message')
+@fyoo.argument('--message', help='Message to print out')
 @fyoo.flow()
 def hello(
         message: str,

@@ -5,21 +5,21 @@ from typing import TextIO
 from sqlalchemy.engine import Connection, ResultProxy
 
 import fyoo
-from fyoo.ext.mysql.resource import MysqlResource
+from fyoo.ext.postgres.resource import PostgresResource
 
 
 @fyoo.argument('--query-batch-size', type=int, default=10_000)
-@fyoo.argument('target', type=argparse.FileType('w'), help='Target output CSV file')
+@fyoo.argument('target', type=argparse.FileType('w'))
 @fyoo.argument('sql')
-@fyoo.resource(MysqlResource)
+@fyoo.resource(PostgresResource)
 @fyoo.flow()
-def mysql_query_to_csv_file(
-        mysql: Connection,
+def postgres_query_to_csv_file(
+        postgres: Connection,
         sql: str,
         target: TextIO,
         query_batch_size: int,
 ):
-    result_proxy: ResultProxy = mysql.execute(sql)
+    result_proxy: ResultProxy = postgres.execute(sql)
 
     writer = csv.writer(target)
     writer.writerow(result_proxy.keys())

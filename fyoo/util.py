@@ -1,9 +1,9 @@
 import os
+import json
 import re
-from abc import abstractmethod
-from argparse import Action
+from argparse import Action, ArgumentTypeError
 from configparser import SafeConfigParser
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional, Text
 
 CONFIG_ENV_VAR_REGEX = r'|'.join([
     r'^FYOO_',
@@ -15,17 +15,13 @@ CONFIG_ENV_VAR_REGEX = r'|'.join([
 ])
 
 
-def csv_list_type(value: Optional[str] = None) -> List[str]:
+def csv_list_type(value: Optional[Text] = None) -> List[Text]:
     if not value:
         return []
     return [v for v in value.split(',') if v]
 
 
-def config_parser_type(value: Optional[str] = None) -> Dict[str, Dict]:
-    if value:
-        paths = [v for v in value.split(',') if v]
-    else:
-        paths = ['fyoo.ini', ]
+def read_config(config_filename: Text) -> Dict[Text, Dict]:
     regex = re.compile(CONFIG_ENV_VAR_REGEX, flags=re.IGNORECASE)
     env_vars = {
         key: value
@@ -33,7 +29,7 @@ def config_parser_type(value: Optional[str] = None) -> Dict[str, Dict]:
         if regex.match(key)
     }
     config = SafeConfigParser(env_vars)
-    config.read(paths)
+    config.read([config_filename, ])
     config_dict = {
         section_key: {
             item_key: item_value
@@ -45,29 +41,17 @@ def config_parser_type(value: Optional[str] = None) -> Dict[str, Dict]:
     return config_dict
 
 
+def json_dict_type(value: Optional[Text] = None):
+    if not value:
+        return {}
+    data = json.loads(value)
+    if not isinstance(data, dict):
+        raise ArgumentTypeError('JSON contents should explicitly be a dictionary')
+    return data
+
+
 # pylint: disable=too-few-public-methods
 class NegateAction(Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, option_string[2:4] != 'no')
-
-
-class Singleton:
-
-    _instance = None
-
-    @abstractmethod
-    def __init__(self):
-        raise NotImplementedError()
-
-    def __new__(cls, **kwargs) -> Any:
-        if kwargs.pop('_is_instance_call', False) is not True:
-            raise ValueError(f'Not calling instance for {cls}')
-        return super(Singleton, cls).__new__(cls)
-
-    @classmethod
-    def instance(cls):
-        if cls._instance is None:
-            cls._instance = cls.__new__(cls, _is_instance_call=True)  # pylint: disable=too-many-function-args
-            cls._instance.__init__()
-        return cls._instance

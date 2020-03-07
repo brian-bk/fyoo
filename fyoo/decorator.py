@@ -1,7 +1,7 @@
 import functools
 from typing import Callable, Optional
 
-from fyoo.parser import ParserSingleton
+from fyoo.cli import CliSingleton
 from fyoo.resource import FyooResource
 
 
@@ -26,7 +26,7 @@ def flow() -> Callable:
             return None
     """
     def d_flow(func):
-        ParserSingleton.instance().add_flow(func)
+        CliSingleton.instance().add_flow(func.__name__, func)
 
         @functools.wraps(func)
         def f_flow(*args, **kwargs):
@@ -60,7 +60,7 @@ def argument(*dargs, **dkwargs) -> Callable:
             return None
     """
     def decorator(func):
-        parser = ParserSingleton.instance().get_flow(func)
+        parser = CliSingleton.instance().get_flow(func.__name__)
         parser.add_argument(*dargs, **dkwargs)
 
         @functools.wraps(func)
@@ -72,14 +72,14 @@ def argument(*dargs, **dkwargs) -> Callable:
 
 def resource(resource_type: type, *dargs, which: Optional[str] = None, **dkwargs) -> Callable:
     """A short-cut for adding a FyooResource to the Flow subparser.
-    
+
     Args:
         resource_type (type): [description]
         which (Optional[str], optional): [description]. Defaults to None.
-    
+
     Raises:
         ValueError: If :arg:`resource_type` is not a subclass of FyooResource
-    
+
     Returns:
         Callable: [description]
     """
@@ -92,7 +92,7 @@ def resource(resource_type: type, *dargs, which: Optional[str] = None, **dkwargs
         arg = f'--{resource_type.name}-{which}'
 
     def decorator(func):
-        parser = ParserSingleton.instance().get_flow(func)
+        parser = CliSingleton.instance().get_flow(func.__name__)
         parser.add_argument(arg, *dargs, type=resource_type, default='', **dkwargs)
 
         @functools.wraps(func)

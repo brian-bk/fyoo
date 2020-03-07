@@ -40,6 +40,7 @@ def extras_require():
     database_common_requires = ['sqlalchemy']
     extras_require = {
         'mysql': ['mysqlclient'] + database_common_requires,
+        'postgres': ['psycopg2'] + database_common_requires,
         'test': [
             'pylint',
             'pytest',

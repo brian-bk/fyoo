@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Optional
 
 class FyooResource:
     """The abstract FyooResource class.
-    
+
     Subclasses of FyooResources
     must implement :attr:`name`, :meth:`open`, and :meth:`close`.
 
@@ -16,20 +16,20 @@ class FyooResource:
 
         class FileWriterFyooResource(FyooResource):
             name = 'mine'
-       
+
             def open(self, filename, **config) -> TextIO:
                 return open(filename, 'w')
-       
+
             def close(self, file: TextIO) -> None:
                 file.close()
-       
+
     Attributes:
         name: Class abstract attribute, must be unique
         identifier: Unique identifier of an instantiated FyooResource
         opened: Whether the FyooResource is actively opened
     Args:
         value (Optional[str]): If no value is provided, :attr:`identifier` will
-            default to :attr:`name`. Otherwise :attr:`identifier` will be 
+            default to :attr:`name`. Otherwise :attr:`identifier` will be
             set to the provided value.
     """
 
@@ -62,10 +62,10 @@ class FyooResource:
         """Subclasses must implement a close method.
 
         This method should close the connection, client, or file.
-        
+
         Args:
             asset (Optional[Any]): The returned value from :attr:`open`.
-        
+
         Returns:
             None
         """
@@ -83,14 +83,14 @@ class FyooResource:
 
         It stores the connection/client/file in :attr:`_asset`
         and set :attr:`opened` to ``True``.
-        
+
         Args:
             open_func (Callable): The sub-class's open function.
-        
+
         Raises:
             RuntimeError: Attempting to open an already opened instantiated
             FyooResource
-        
+
         Returns:
             Callable: The decorated open function.
         """
@@ -111,15 +111,15 @@ class FyooResource:
         It provides the stored :attr:`_asset` to the close function
         and sets :attr:`opened` to ``False``. If the instantiated
         FyooResource is already closed, this function does nothing.
-        
+
         Args:
             close_func (Callable): The sub-class's close function.
-        
+
         Returns:
             Callable: The decorated close function.
         """
         @functools.wraps(close_func)
-        def wrapped_func(self):
+        def wrapped_func(self, _asset: Optional[Any] = None):
             if not self.opened:
                 return None
             asset = self._asset  # pylint: disable=protected-access
@@ -133,9 +133,9 @@ class FyooResource:
 
         We have to decorate at subclass init time, because we don't
         want to just decorate the abstract methods.
-        
+
         Raises:
-            ValueError: If :arg:`cls` does name have a ``name`` attribute,
+            ValueError: If ``cls`` does name have a ``name`` attribute,
             or if there are duplicate different sub-classes with the same
             ``name`` attribute.
         """
