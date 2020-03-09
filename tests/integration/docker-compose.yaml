@@ -10,12 +10,14 @@ services:
     image: postgres
   tests:
     image: circleci/python$IMAGE_VERSION
+    environment:
+      CODECOV_TOKEN: $CODECOV_TOKEN
     command:
       - bash
       - -c
       - |
         set -euxp pipefail
-        cd /fyoo
+        cd /home/circleci/project
 
         ./tests/wait-for-it.sh -t 60 mysql:3306
         ./tests/wait-for-it.sh -t 60 postgres:5432
@@ -24,21 +26,21 @@ services:
         # connections
         sleep 1
 
-        if [ "$CI" == "true" ]; then
-          . venv-all/bin/activate
-        else
-          VENV="$$(mktemp -d -t venv-all.XXXX)"
-          virtualenv -p python3 "$$VENV"
-          "$$VENV"/bin/pip install -e .[all]
-          set +x
-          . "$$VENV"/bin/activate
-          set -x
-        fi
+        VENV="$$(mktemp -d -t venv-all.XXXX)"
+        virtualenv -p python3 "$$VENV"
+        "$$VENV"/bin/pip install .[all]
+        set +x
+        . "$$VENV"/bin/activate
+        set -x
 
         coverage run -m pytest tests/integration
         coverage html
+
+        if [ ! -z "$${CODECOV_TOKEN}" ]; then
+          codecov
+        fi
     volumes:
-      - ../../:/fyoo
+      - ../../:/home/circleci/project
     depends_on:
       - mysql
       - postgres

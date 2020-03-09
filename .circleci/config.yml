@@ -17,6 +17,8 @@ workflows:
       - deploy:
           requires:
             - build
+            - test-python-install
+            - integration
           filters:
             tags:
               only:
@@ -90,29 +92,14 @@ jobs:
         type: string
         default: latest
     machine:
-      image: circleci/python:<< parameters.version >>
+      image: circleci/classic:latest
     steps:
       - checkout
-      - restore_cache:
-          key: v1-dependency-all-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
-      - run:
-          name: install all python dependencies
-          command: |
-            python3 -m venv venv-all
-            . venv-all/bin/activate
-            pip install -e .[all]
-      - save_cache:
-          key: v1-dependency-all-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
-          paths:
-            - "venv-all"
       - run:
           name: Integration Test
           command: |
             export IMAGE_VERSION=":<< parameters.version >>"
             make integration
-            codecov
-      - store_artifacts:
-          path: htmlcov/
   deploy:
     docker:
       - image: circleci/python:3.7
