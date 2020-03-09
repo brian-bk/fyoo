@@ -45,6 +45,7 @@ def extras_require():
             'pylint',
             'pytest',
             'pytest-cov',
+            'pytest-env',
         ],
     }
     dev_requires = {

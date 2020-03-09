@@ -1,0 +1,49 @@
+version: "3"
+services:
+  mysql:
+    environment:
+      MYSQL_ROOT_PASSWORD: fyoopw
+    image: mysql
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: fyoopw
+    image: postgres
+  tests:
+    image: circleci/python$IMAGE_VERSION
+    environment:
+      CI: $CI
+    command:
+      - bash
+      - -c
+      - |
+        set -euxp pipefail
+        cd /fyoo
+
+        ./tests/wait-for-it.sh -t 60 mysql:3306
+        ./tests/wait-for-it.sh -t 60 postgres:5432
+
+        # Wait 1 extra second - make sure dbs can actually receive
+        # connections
+        sleep 1
+
+        if [ "$$CI" == "true" ]; then
+          . venv/bin/activate
+        else
+          VENV="$$(mktemp -d -t venv.XXXX)"
+          virtualenv -p python3 "$$VENV"
+          "$$VENV"/bin/pip install -e .[all]
+          set +x
+          . "$$VENV"/bin/activate
+          set -x
+        fi
+
+        coverage run -m pytest tests/integration
+        coverage html
+    volumes:
+      - ../../:/fyoo
+    depends_on:
+      - mysql
+      - postgres
+    links:
+      - mysql
+      - postgres

@@ -66,7 +66,7 @@ class CliSingleton:
         self._subparsers = self._parser.add_subparsers(parser_class=FlowParser)
         self._flows: Dict[str, FlowParser] = dict()
 
-        self._parser.add_argument('--resource-config', default=os.path.join(os.getcwd(), 'fyoo.ini'),
+        self._parser.add_argument('--resource-config', default=os.getenv('FYOO_RESOURCE_CONFIG', os.path.join(os.getcwd(), 'fyoo.ini')),
                                   help='The resource configuration file to use')
         self.resource_config = dict()
         self._parser.add_argument('--jinja-strict', '--no-jinja-strict', dest='jinja_strict',

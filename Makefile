@@ -15,7 +15,15 @@ dev:
 		echo "Making virtualenv at venv" ; \
 		virtualenv -p python3 venv ; \
 	fi
-	./venv/bin/pip install -r requirements.txt
+	./venv/bin/pip install -e .[dev]
+	echo "Activate with . venv/bin/activate"
+
+dev-all:
+	if [ ! -d "venv" ]; then \
+		echo "Making virtualenv at venv" ; \
+		virtualenv -p python3 venv ; \
+	fi
+	./venv/bin/pip install -e .[all]
 	echo "Activate with . venv/bin/activate"
 
 docs:
@@ -29,5 +37,9 @@ lint:
 	pylint fyoo
 
 test:
-	coverage run -m pytest
+	coverage run -m pytest tests/unit
 	coverage html
+
+integration:
+	docker-compose -f tests/integration/docker-compose.yaml build
+	docker-compose -f tests/integration/docker-compose.yaml run tests
