@@ -14,7 +14,6 @@ workflows:
           version: "3.7"
           requires:
             - build
-            - test-python-install
       - deploy:
           requires:
             - build
@@ -93,19 +92,21 @@ jobs:
     docker:
       - image: circleci/python:<< parameters.version >>
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
       - restore_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+          key: v1-dependency-all-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
       - run:
-          name: install python dependencies
+          name: install all python dependencies
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            make dev-all
+            python3 -m venv venv-all
+            . venv-all/bin/activate
+            pip install -e .[all]
       - save_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+          key: v1-dependency-all-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
           paths:
-            - "venv"
+            - "venv-all"
       - run:
           name: Integration Test
           command: |

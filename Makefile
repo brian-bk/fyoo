@@ -18,14 +18,6 @@ dev:
 	./venv/bin/pip install -e .[dev]
 	echo "Activate with . venv/bin/activate"
 
-dev-all:
-	if [ ! -d "venv" ]; then \
-		echo "Making virtualenv at venv" ; \
-		virtualenv -p python3 venv ; \
-	fi
-	./venv/bin/pip install -e .[all]
-	echo "Activate with . venv/bin/activate"
-
 docs:
 	$(MAKE) -C docs html
 
