@@ -9,7 +9,11 @@ services:
       POSTGRES_PASSWORD: fyoopw
     image: postgres
   tests:
-    image: circleci/python$IMAGE_VERSION
+    build:
+      context: ../../
+      dockerfile: tests/integration/Dockerfile
+      args:
+        version: $CIRCLECI_PYTHON_VERSION
     environment:
       CODECOV_TOKEN: $CODECOV_TOKEN
     command:
@@ -17,7 +21,6 @@ services:
       - -c
       - |
         set -euxp pipefail
-        cd /home/circleci/project
 
         ./tests/wait-for-it.sh -t 60 mysql:3306
         ./tests/wait-for-it.sh -t 60 postgres:5432
@@ -39,8 +42,6 @@ services:
         if [ ! -z "$${CODECOV_TOKEN}" ]; then
           codecov
         fi
-    volumes:
-      - ../../:/home/circleci/project
     depends_on:
       - mysql
       - postgres

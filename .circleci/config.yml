@@ -98,7 +98,7 @@ jobs:
       - run:
           name: Integration Test
           command: |
-            export IMAGE_VERSION=":<< parameters.version >>"
+            export CIRCLECI_PYTHON_VERSION="<< parameters.version >>"
             make integration
   deploy:
     docker:
