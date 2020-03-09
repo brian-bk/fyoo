@@ -13,7 +13,7 @@ workflows:
       - integration:
           version: "3.7"
           requires:
-            - build
+            - test-python-install
       - deploy:
           requires:
             - build
@@ -89,11 +89,9 @@ jobs:
       version:
         type: string
         default: latest
-    docker:
-      - image: circleci/python:<< parameters.version >>
+    machine:
+      image: circleci/python:<< parameters.version >>
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: false
       - checkout
       - restore_cache:
           key: v1-dependency-all-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
