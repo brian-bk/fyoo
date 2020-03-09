@@ -93,7 +93,7 @@ jobs:
       - image: circleci/python:<< parameters.version >>
     steps:
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - checkout
       - restore_cache:
           key: v1-dependency-all-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
