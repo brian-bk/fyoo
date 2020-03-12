@@ -85,7 +85,7 @@ jobs:
           name: Smoke Test Install
           command: |
             python --version
-            sudo pip3 install fyoo
+            # sudo pip3 install fyoo
   integration:
     parameters:
       version:
