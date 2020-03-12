@@ -1,0 +1,2 @@
+# For readthedocs and local development
+-e .[dev]
