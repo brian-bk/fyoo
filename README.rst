@@ -188,13 +188,13 @@ with less optional arguments than the real version:
 
 .. |PyPI Package| image:: https://img.shields.io/pypi/v/fyoo.svg
    :target: https://pypi.python.org/pypi/fyoo/
-.. |Documentation| image:: https://readthedocs.org/projects/fyoo/badge/?version=develop
-    :target: https://fyoo.readthedocs.io/en/develop/?badge=develop
+.. |Documentation| image:: https://readthedocs.org/projects/fyoo/badge/?version=master
+    :target: https://fyoo.readthedocs.io/en/master/?badge=master
     :alt: Documentation Status
 .. |Git tag| image:: https://img.shields.io/github/tag/brian-bk/fyoo.svg
    :target: https://github.com/brian-bk/fyoo/commit/
-.. |Test status| image:: https://circleci.com/gh/brian-bk/fyoo/tree/develop.svg?style=svg
-    :target: https://circleci.com/gh/brian-bk/fyoo/tree/develop
-.. |Code coverage| image:: https://codecov.io/gh/brian-bk/fyoo/branch/develop/graph/badge.svg
+.. |Test status| image:: https://circleci.com/gh/brian-bk/fyoo/tree/master.svg?style=svg
+    :target: https://circleci.com/gh/brian-bk/fyoo/tree/master
+.. |Code coverage| image:: https://codecov.io/gh/brian-bk/fyoo/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/brian-bk/fyoo
 .. _Pipenv: https://pipenv-fork.readthedocs.io/
