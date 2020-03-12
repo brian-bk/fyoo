@@ -138,10 +138,3 @@ jobs:
           command: |
             . venv/bin/activate
             twine upload dist/*
-      - run:
-          name: Smoke Test Install from PyPI
-          command: |
-            python --version
-            FYOO_VERSION="$(python setup.py --version)"
-            cd "$(mktemp -d -t smoke.XXXX)"
-            sudo pip3 install "fyoo==$FYOO_VERSION"
