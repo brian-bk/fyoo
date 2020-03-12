@@ -1,19 +1,13 @@
 version: "3"
 services:
   mysql:
-    environment:
-      MYSQL_ROOT_PASSWORD: fyoopw
     image: mysql
+    environment: { MYSQL_ROOT_PASSWORD: fyoopw }
   postgres:
-    environment:
-      POSTGRES_PASSWORD: fyoopw
     image: postgres
+    environment: { POSTGRES_PASSWORD: fyoopw }
   tests:
-    build:
-      context: ../../
-      dockerfile: tests/integration/Dockerfile
-      args:
-        version: $CIRCLECI_PYTHON_VERSION
+    image: circleci/python$PYTHON_IMAGE_TAG
     environment:
       CODECOV_TOKEN: $CODECOV_TOKEN
     command:
@@ -21,6 +15,9 @@ services:
       - -c
       - |
         set -euxp pipefail
+        WORKDIR="$$(mktemp -d -t integration.XXXX)"
+        cp -R /home/circleci/project "$$WORKDIR"
+        cd "$$WORKDIR"/project
 
         ./tests/wait-for-it.sh -t 60 mysql:3306
         ./tests/wait-for-it.sh -t 60 postgres:5432
@@ -29,11 +26,10 @@ services:
         # connections
         sleep 1
 
-        VENV="$$(mktemp -d -t venv-all.XXXX)"
-        virtualenv -p python3 "$$VENV"
-        "$$VENV"/bin/pip install .[all]
+        virtualenv -p python3 venv
+        ./venv/bin/pip install -e .[all]
         set +x
-        . "$$VENV"/bin/activate
+        . ./venv/bin/activate
         set -x
 
         coverage run -m pytest tests/integration
@@ -42,6 +38,8 @@ services:
         if [ ! -z "$${CODECOV_TOKEN}" ]; then
           codecov
         fi
+    volumes:
+      - ../../:/home/circleci/project
     depends_on:
       - mysql
       - postgres

@@ -38,7 +38,7 @@ def install_requires():
 
 def extras_require():
     database_common_requires = ['sqlalchemy']
-    extras_require = {
+    require = {
         'mysql': ['mysqlclient'] + database_common_requires,
         'postgres': ['psycopg2'] + database_common_requires,
         'test': [
@@ -58,14 +58,13 @@ def extras_require():
         'sphinx_rtd_theme',
         'sphinx-argparse',
     }
-    dev_requires.update(set(extras_require['test']))
+    dev_requires.update(set(require['test']))  # dev tooling always needs test tooling
+    require = dict(**require, dev=dev_requires)  # add in 'dev' extra
+    # Ensure that all always has everything
     all_requires = list(set(
-        itertools.chain.from_iterable(extras_require.values())
+        itertools.chain.from_iterable(require.values())
     ))
-    return dict(**extras_require, **{
-        'all': all_requires,
-        'dev': dev_requires,
-    })
+    return dict(**require, all=all_requires)
 
 
 class VerifyVersionCommand(install):
