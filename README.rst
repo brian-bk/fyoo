@@ -188,8 +188,8 @@ with less optional arguments than the real version:
 
 .. |PyPI Package| image:: https://img.shields.io/pypi/v/fyoo.svg
    :target: https://pypi.python.org/pypi/fyoo/
-.. |Documentation| image:: https://readthedocs.org/projects/fyoo/badge/?version=master
-    :target: https://fyoo.readthedocs.io/en/master/?badge=master
+.. |Documentation| image:: https://readthedocs.org/projects/fyoo/badge/?version=latest
+    :target: https://fyoo.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 .. |Git tag| image:: https://img.shields.io/github/tag/brian-bk/fyoo.svg
    :target: https://github.com/brian-bk/fyoo/commit/
