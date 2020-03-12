@@ -33,4 +33,5 @@ test:
 	coverage html
 
 integration:
+	docker-compose -f tests/integration/docker-compose.yaml build
 	docker-compose -f tests/integration/docker-compose.yaml run tests
