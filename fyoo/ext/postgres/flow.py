@@ -1,11 +1,8 @@
 import argparse
-import csv
-from typing import TextIO
-
-from sqlalchemy.engine import Connection, ResultProxy
 
 import fyoo
 from fyoo.ext.postgres.resource import PostgresResource
+from fyoo.ext_base.db.util import db_query_to_csv_file
 
 
 @fyoo.argument('--query-batch-size', type=int, default=10_000)
@@ -13,18 +10,6 @@ from fyoo.ext.postgres.resource import PostgresResource
 @fyoo.argument('sql')
 @fyoo.resource(PostgresResource)
 @fyoo.flow()
-def postgres_query_to_csv_file(
-        postgres: Connection,
-        sql: str,
-        target: TextIO,
-        query_batch_size: int,
-):
-    result_proxy: ResultProxy = postgres.execute(sql)
-
-    writer = csv.writer(target)
-    writer.writerow(result_proxy.keys())
-    while result_proxy.returns_rows:
-        rows = result_proxy.fetchmany(query_batch_size)
-        if not rows:
-            break
-        writer.writerows(rows)
+def postgres_query_to_csv_file(**kwargs) -> None:
+    db = kwargs.pop('postgres')
+    return db_query_to_csv_file(db=db, **kwargs)

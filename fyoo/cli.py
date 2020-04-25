@@ -66,8 +66,10 @@ class CliSingleton:
         self._subparsers = self._parser.add_subparsers(parser_class=FlowParser)
         self._flows: Dict[str, FlowParser] = dict()
 
-        self._parser.add_argument('--resource-config', default=os.getenv('FYOO_RESOURCE_CONFIG', os.path.join(os.getcwd(), 'fyoo.ini')),
-                                  help='The resource configuration file to use')
+        self._parser.add_argument(
+            '--resource-config',
+            default=os.getenv('FYOO_RESOURCE_CONFIG', os.path.join(os.getcwd(), 'fyoo.ini')),
+            help='The resource configuration file to use')
         self.resource_config = dict()
         self._parser.add_argument('--jinja-strict', '--no-jinja-strict', dest='jinja_strict',
                                   action=NegateAction, nargs=0, default=True,
@@ -102,6 +104,7 @@ class CliSingleton:
     def get_flow(self, prog: str) -> FlowParser:
         return self._flows[prog]
 
+    # pylint: disable=too-many-locals,too-many-branches
     def main(self, args: Sequence[Text]):
         action_dests: Set[Text] = {
             action.dest
@@ -168,9 +171,11 @@ class CliSingleton:
         return cls.__instance
 
 
+
 def get_parser():
+    """Get Parser, for documentation"""
     import_submodules('fyoo.ext')
-    return CliSingleton.instance()._parser
+    return CliSingleton.instance()._parser  # pylint: disable=protected-access
 
 
 def main(args: Optional[Sequence[Text]] = None):

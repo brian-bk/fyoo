@@ -2,10 +2,10 @@ version: "3"
 services:
   mysql:
     image: mysql
-    environment: { MYSQL_ROOT_PASSWORD: fyoopw }
+    environment: { MYSQL_ROOT_PASSWORD: fyoopw1! }
   postgres:
     image: postgres
-    environment: { POSTGRES_PASSWORD: fyoopw }
+    environment: { POSTGRES_PASSWORD: fyoopw1! }
   tests:
     image: circleci/python$PYTHON_IMAGE_TAG
     environment:
