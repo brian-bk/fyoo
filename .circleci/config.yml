@@ -40,16 +40,16 @@ jobs:
           paths:
             - "venv"
       - run:
+          name: run lint
+          command: |
+            . venv/bin/activate
+            make lint
+      - run:
           name: run tests
           command: |
             . venv/bin/activate
             make test
             codecov
-      - lint:
-          name: run lint
-          command: |
-            . venv/bin/activate
-            make lint
       - store_artifacts:
           path: htmlcov/
   test-python-install:
