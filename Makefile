@@ -29,8 +29,5 @@ lint:
 	pylint fyoo
 
 test:
-	coverage run -m pytest tests/unit
+	coverage run -m pytest
 	coverage html
-
-integration:
-	docker-compose -f tests/integration/docker-compose.yaml run tests

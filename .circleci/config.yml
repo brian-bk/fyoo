@@ -10,15 +10,15 @@ workflows:
           version: "3.7"
           requires:
             - build
-      - integration:
-          version: "3.7"
-          requires:
-            - test-python-install
+      # - integration:
+      #     version: "3.7"
+      #     requires:
+      #       - test-python-install
       - deploy:
           requires:
             - build
             - test-python-install
-            - integration
+            # - integration
           filters:
             tags:
               only:
@@ -91,20 +91,20 @@ jobs:
           command: |
             python --version
             sudo pip3 install .
-  integration:
-    parameters:
-      version:
-        type: string
-        default: latest
-    machine:
-      image: circleci/classic:latest
-    steps:
-      - checkout
-      - run:
-          name: Integration Test
-          command: |
-            export PYTHON_IMAGE_TAG=":<< parameters.version >>"
-            make integration
+  # integration:
+  #   parameters:
+  #     version:
+  #       type: string
+  #       default: latest
+  #   machine:
+  #     image: circleci/classic:latest
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Integration Test
+  #         command: |
+  #           export PYTHON_IMAGE_TAG=":<< parameters.version >>"
+  #           make integration
   deploy:
     docker:
       - image: circleci/python:3.7
