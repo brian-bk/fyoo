@@ -2,7 +2,7 @@ import codecs
 import itertools
 import os
 import re
-import yaml
+import json
 
 from setuptools import find_packages, setup
 from setuptools.command.install import install
@@ -85,10 +85,10 @@ class ShowInstallExtrasCommand(install):
         print(
 f'''
 Install requires
-{yaml.dump(install_requires())}
+{json.dumps(install_requires(), indent=2)}
 
 Extra requires
-{yaml.dump(extras_require())}
+{json.dumps(extras_require(), indent=2)}
 '''
         )
 
