@@ -43,26 +43,6 @@ If SQL queries are to be re-used, perhaps the query itself comes from a template
    # 1 (assuming same example from before)
 
 
-For complete how-to's and arguments, see :ref:`Usage`.
-
-Complete Documentation
-----------------------
-
-.. toctree::
-   :maxdepth: 2
-
-   usage
-   api
-
-
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-
 .. links
 
 .. |PyPI Package| image:: https://img.shields.io/pypi/v/fyoo.svg
