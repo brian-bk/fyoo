@@ -1,10 +1,8 @@
 
 
-class FyooException(Exception):
+class FyooBaseException(Exception):
     pass
 
-class FyooRuntimeException(FyooException):
-    pass
 
-class FyooJsonException(FyooException):
+class FyooTemplateException(FyooBaseException):
     pass

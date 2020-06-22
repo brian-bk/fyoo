@@ -2,7 +2,7 @@ import codecs
 import itertools
 import os
 import re
-from typing import List
+import json
 
 from setuptools import find_packages, setup
 from setuptools.command.install import install
@@ -31,16 +31,13 @@ def find_version():
 
 def install_requires():
     return [
-        'configparser',
         'jinja2',
+        'PyYAML',
     ]
 
 
 def extras_require():
-    database_common_requires = ['sqlalchemy']
     require = {
-        'mysql': ['mysqlclient'] + database_common_requires,
-        'postgres': ['psycopg2'] + database_common_requires,
         'test': [
             'pylint',
             'pytest',
@@ -59,7 +56,7 @@ def extras_require():
         'sphinx-argparse',
     }
     dev_requires.update(set(require['test']))  # dev tooling always needs test tooling
-    require = dict(**require, dev=dev_requires)  # add in 'dev' extra
+    require = dict(**require, dev=list(dev_requires))  # add in 'dev' extra
     # Ensure that all always has everything
     all_requires = list(set(
         itertools.chain.from_iterable(require.values())
@@ -79,6 +76,23 @@ class VerifyVersionCommand(install):
             raise RuntimeError(f'Git tag: {tag} does not match the version of this app: {version}')
 
 
+
+class ShowInstallExtrasCommand(install):
+    """Custom command to output extras"""
+    description = 'show requirements and extras'
+
+    def run(self):
+        print(
+f'''
+Install requires
+{json.dumps(install_requires(), indent=2)}
+
+Extra requires
+{json.dumps(extras_require(), indent=2)}
+'''
+        )
+
+
 def do_setup():
     setup(
         name='fyoo',
@@ -95,6 +109,7 @@ def do_setup():
         python_requires='>=3.7',
         cmdclass={
             'verify': VerifyVersionCommand,
+            'show_install': ShowInstallExtrasCommand,
         }
     )
 

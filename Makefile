@@ -15,7 +15,7 @@ dev:
 		echo "Making virtualenv at venv" ; \
 		virtualenv -p python3 venv ; \
 	fi
-	./venv/bin/pip install -e .[dev]
+	./venv/bin/pip install -e .[all]
 	echo "Activate with . venv/bin/activate"
 
 docs:
@@ -29,8 +29,5 @@ lint:
 	pylint fyoo
 
 test:
-	coverage run -m pytest tests/unit
+	coverage run -m pytest
 	coverage html
-
-integration:
-	docker-compose -f tests/integration/docker-compose.yaml run tests

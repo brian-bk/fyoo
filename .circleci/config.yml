@@ -10,15 +10,10 @@ workflows:
           version: "3.7"
           requires:
             - build
-      - integration:
-          version: "3.7"
-          requires:
-            - test-python-install
       - deploy:
           requires:
             - build
             - test-python-install
-            - integration
           filters:
             tags:
               only:
@@ -44,6 +39,11 @@ jobs:
           key: v1-dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
           paths:
             - "venv"
+      - run:
+          name: run lint
+          command: |
+            . venv/bin/activate
+            make lint
       - run:
           name: run tests
           command: |
@@ -86,20 +86,6 @@ jobs:
           command: |
             python --version
             sudo pip3 install .
-  integration:
-    parameters:
-      version:
-        type: string
-        default: latest
-    machine:
-      image: circleci/classic:latest
-    steps:
-      - checkout
-      - run:
-          name: Integration Test
-          command: |
-            export PYTHON_IMAGE_TAG=":<< parameters.version >>"
-            make integration
   deploy:
     docker:
       - image: circleci/python:3.7
