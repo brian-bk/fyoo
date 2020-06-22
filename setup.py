@@ -32,6 +32,7 @@ def find_version():
 def install_requires():
     return [
         'jinja2',
+        'PyYAML',
     ]
 
 
