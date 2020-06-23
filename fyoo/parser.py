@@ -3,8 +3,8 @@ from typing import Optional
 
 import jinja2
 
+from . import template as fyoo_template
 from .internal import util as fyoo_util
-from .internal import template as fyoo_template
 
 
 class _FyooSecretParser(ArgumentParser):

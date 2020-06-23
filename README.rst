@@ -7,41 +7,72 @@ Fyoo
 |Test status|
 |Code coverage|
 
-Fyoo is a simple jinja2-based command-argument-templatizer CLI utility.
-Templatizing can be done at runtime for consistent argument tweaks.
+Fyoo is a simple argument templatizer that wraps around a command.
+CLIs exist for pretty much everything, isn't it about time we
+started using them in our pipelines as they are? The best data
+flow code is code you don't have to write.
 
 Basic Usage
 -----------
 
-Fyoo runs a command with templatized arguments succeeding `--`. Context
-can be provided by flags or there are a few baked-in functions.
+Fyoo can provide context to a subcommand's arguments after ``--``.
+All arguments to that subcommand become pre-rendered jinja2 templates.
 
-Example inline query:
+.. admonition:: Setup for examples
+
+   .. code-block:: bash
+   
+      # Create a sqlite3 db for this example
+      sqlite3 example.db \
+      'create table if not exists
+         user (username string, created date default current_date);
+      insert into user(username) values ("cooluser");'
+
+Fyoo allows you to inject context into shell arguments in a few
+ways, ``--fyoo-set`` being the simplest and easiest to get started
+with.
 
 .. code-block:: bash
-
-   # Create a sqlite3 db for this example
-   sqlite3 example.db 'create table if not exists user (username string, created date default current_date);insert into user(username) values ("cooluser")'
    
    # run a templatized/dynamic query to csv output
-   fyoo --fyoo-set table=user --fyoo-set db=example.db -- \
-     sqlite3 '{{ db }}' \
-      'select * from {{ table }} where date(created) = "{{ dt() }}"' \
-      -csv -header
+   fyoo \
+     --fyoo-set table=user \
+     --fyoo-set db=example.db \
+     -- \
+   sqlite3 \
+     '{{ db }}' \
+     'select * from {{ table }} where date(created) = "{{ date() }}"' \
+     -csv -header
    # username,created
    # cooluser,2020-06-21
 
-If SQL queries are to be re-used, perhaps the query itself comes from a template file.
+This goes further than simple bash replacement, because you have
+the full template power of jinja2 between when arguments are
+processed and before the process is started.
+
+.. code-block:: sql
+   :caption: count.tpl.sql
+   :name: count-tpl-sql
+
+   select count(*)
+   from {{ table }}
+   {%- if condition %}
+   where {{ condition }}
+   {%- endif %}
 
 .. code-block:: bash
 
-   echo 'select count(*)
-   from {{ table }}' > count.sql
-   
-   fyoo '--fyoo-context={"db": "example.db", "table": "user"}' -- \
-     sqlite3 '{{ db }}' "$(cat count.sql)"
-   # 1 (assuming same example from before)
-
+   # The template file contents are passed as a bash argument, but then
+   # fyoo renders the template before passing it to sqllite3 subcommand.
+   fyoo \
+     --fyoo-set table=user \
+     --fyoo-set db=example.db \
+     --fyoo-set condition=1=1
+     -- \
+   sqlite3 \
+     '{{ db }}' \
+     "$(cat count.tpl.sql)"
+   # 1 (assuming same example from before
 
 .. links
 
