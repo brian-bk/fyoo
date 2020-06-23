@@ -51,7 +51,6 @@ the full template power of jinja2 between when arguments are
 processed and before the process is started.
 
 .. code-block:: sql
-   :caption: count.tpl.sql
    :name: count-tpl-sql
 
    select count(*)
