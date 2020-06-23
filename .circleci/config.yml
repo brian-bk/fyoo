@@ -82,10 +82,13 @@ jobs:
       - store_artifacts:
           path: htmlcov/
       - run:
-          name: Check package
+          name: create packages
+          command: |
+            make package
+      - run:
+          name: check package pypi
           command: |
             . venv/bin/activate
-            make package
             twine check dist/*
       - run:
           name: Smoke Test Install
