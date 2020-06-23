@@ -20,7 +20,7 @@ def test_passed_namespace_no_args_in_this_parser():
         '--fyoo-context-format=yaml',
         '--fyoo-set=b=DEF',
         '--fyoo-set=c=GHI',
-        '--fyoo-jinja-extension=fyoo.internal.template.FyooEnvExtension',
+        '--fyoo-jinja-extension=fyoo.template.FyooEnvExtension',
     ])
     assert p.parse_args([]).__dict__ == {}
 

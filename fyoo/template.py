@@ -9,9 +9,6 @@ from fyoo.exception import FyooTemplateException
 
 
 class FyooDatetimeExtension(Extension):
-    """
-    Add a few functions or arguments to the global variables.
-    """
 
     def __init__(self, environment: Environment):
         super().__init__(environment)
@@ -23,8 +20,15 @@ class FyooDatetimeExtension(Extension):
         pass
 
     @classmethod
-    def date(cls, tz='UTC', fmt=r'%Y-%m-%d') -> str:
-        """Print now with specified timezone and format
+    def date(cls, tz='UTC', fmt: str = r'%Y-%m-%d') -> str:
+        """Get current time string
+
+        Args:
+            tz (str, optional): Timezone to use. Defaults to 'UTC'.
+            fmt (str, optional): Datetime format. Defaults to r'%Y-%m-%d'.
+
+        Returns:
+            str: Formated datetime string
         """
         return datetime.datetime.now(tz=pytz.timezone(tz)).strftime(fmt)
 
@@ -50,6 +54,8 @@ class FyooEnvExtension(Extension):
 
     @classmethod
     def getenv(cls, *args, **kwargs):
+        """Same as ``os.getenv``
+        """
         return os.getenv(*args, **kwargs)
 
 
@@ -69,5 +75,9 @@ class FyooThrowExtension(Extension):
     @classmethod
     def throw(cls, *args, **kwargs):
         """Raise a FyooTemplateException
+
+        You would do this if you wanted to verify arguments
+        at 'compile-time', before executing a subcommand.
+
         """
         raise FyooTemplateException(*args, **kwargs)
