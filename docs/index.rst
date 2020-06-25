@@ -20,6 +20,13 @@ CLIs exist for pretty much everything, isn't it about time we
 started using them in our pipelines as they are? The best data
 flow code is code you don't have to write.
 
+Installation
+------------
+
+.. code-block:: bash
+
+   pip install fyoo
+
 Basic Usage
 -----------
 
@@ -30,7 +37,7 @@ All arguments to that subcommand become pre-rendered jinja2 templates.
 
    .. code-block:: bash
    
-      # Create a sqlite3 db for this example
+      # Create a sqlite3 db for these examples
       sqlite3 example.db \
       'create table if not exists
          user (username string, created date default current_date);
@@ -61,6 +68,7 @@ processed and before the process is started.
 .. code-block:: sql
    :caption: count.tpl.sql
    :name: count-tpl-sql
+   :force:
 
    select count(*)
    from {{ table }}
@@ -68,10 +76,12 @@ processed and before the process is started.
    where {{ condition }}
    {%- endif %}
 
+Let's use this sql template file now.
+The template file contents are passed as a bash argument, but then
+fyoo renders the template before passing it to sqllite3 subcommand.
+
 .. code-block:: bash
 
-   # The template file contents are passed as a bash argument, but then
-   # fyoo renders the template before passing it to sqllite3 subcommand.
    fyoo \
      --fyoo-set table=user \
      --fyoo-set db=example.db \
@@ -83,6 +93,12 @@ processed and before the process is started.
    # 1 (assuming same example from before)
 
 For complete how-to's and arguments, see :ref:`Usage`.
+
+.. warning::
+
+   Only pass context that you trust! Otherwise you may be leaving yourself
+   wide open for `Command Injection`_. Fyoo is suited for use-cases where *you*
+   are still directly in control of template context.
 
 Complete Documentation
 ----------------------

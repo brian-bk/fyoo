@@ -30,6 +30,11 @@ Set common context variables with auto, json, or yaml format.
    echo '{{ a }}'
    # json.decoder.JSONDecodeError
 
+   fyoo --fyoo-context='{"a":"A"}' --fyoo-context-format=json \
+     -- \
+   echo '{{ a }}'
+   # A
+
 Context Priority
 ````````````````
 
@@ -55,12 +60,6 @@ Priority:
    echo '{{ p }}'
    # highest
 
-Complete CLI Reference
-----------------------
-
-.. argparse::
-   :ref: fyoo.cli.get_parser
-   :prog: fyoo
 
 Built-in Templating
 -------------------
@@ -93,13 +92,14 @@ raw_datetime
 The actual ``datetime.datetime`` object. Work with it however
 you would like.
 
-Also see :py:class:`fyoo.template.FyooEnvExtension`.
 
 Environment Helpers
 ```````````````````
 
 Helpers to environment variables (and maybe later
 more 'environmenty' things).
+
+Also see :py:class:`fyoo.template.FyooEnvExtension`.
 
 getenv()
 ++++++++
@@ -110,6 +110,7 @@ Pass through to ``os.getenv(*args, **kwargs)``.
 
    fyoo -- echo '{{ getenv("USER") }}'
    # acooluser
+
 
 .. code-block::
 
@@ -126,8 +127,7 @@ Also see :py:class:`fyoo.template.FyooThrowExtension`.
 throw()
 +++++++
 
-"Throw" (raise) an exception. Terminology is mixed
-to not use python term.
+"Throw" (raise) an exception.
 
 .. code-block:: sql
    :caption: count.tpl.sql
@@ -140,7 +140,16 @@ to not use python term.
    select count(*)
    from {{ table }}
 
+If you were to call fyoo with this template:
+
 .. code-block:: bash
 
    fyoo -- echo "$(cat count.tpl.sql)"
    # fyoo.exception.FyooTemplateException: no 'table' provided :(
+
+Complete CLI Reference
+----------------------
+
+.. argparse::
+   :ref: fyoo.cli.get_parser
+   :prog: fyoo
