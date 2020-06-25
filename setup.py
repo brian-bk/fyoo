@@ -31,8 +31,8 @@ def find_version():
 
 def install_requires():
     return [
-        'jinja2',
-        'PyYAML',
+        'jinja2>=2.10.1, <2.12',
+        'PyYAML>=3.13, <5.4',
     ]
 
 
@@ -50,9 +50,8 @@ def extras_require():
         'codecov',
         'coverage',
         'twine',
-        'sphinx',
+        'sphinx>=2.1',
         'sphinx-autobuild',
-        'sphinx_rtd_theme',
         'sphinx-argparse',
     }
     dev_requires.update(set(require['test']))  # dev tooling always needs test tooling
