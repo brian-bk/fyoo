@@ -59,7 +59,6 @@ processed and before the process is started.
 
 .. code-block:: sql
    :name: count-tpl-sql
-   :force:
 
    select count(*)
    from {{ table }}
