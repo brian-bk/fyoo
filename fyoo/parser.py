@@ -1,10 +1,48 @@
 from argparse import ArgumentParser
-from typing import Optional
+import json
+from typing import List, Optional, Tuple
+import os
 
 import jinja2
+import yaml
 
-from . import template as fyoo_template
-from .internal import util as fyoo_util
+from .template import (
+    filters as fyoo_filters,
+    attributes as fyoo_attributes,
+)
+
+
+def _parse_template_context(context_format: str, context_string: str):
+    parse_methods = {
+        'json': json.loads,
+        'yaml': yaml.safe_load,
+    }
+    if context_format in parse_methods:
+        result = parse_methods[context_format](context_string)
+        if isinstance(result, dict):
+            return result
+        raise ValueError(f"Context was not a dictionary with format '{context_format}'")
+    raise ValueError(f"Unrecognized context format '{context_format}'")
+
+
+def _generate_fyoo_context(
+        context_format: str,
+        context_strings: Optional[List[str]],
+        additional_vars: Optional[List[Tuple[str, str]]],
+) -> dict:
+    result_template = dict()
+    if context_strings:
+        for context_string in context_strings:
+            result_template.update(_parse_template_context(context_format, context_string))
+    if additional_vars:
+        for key, value in additional_vars:
+            result_template[key] = value
+    return result_template
+
+
+def _set_type(string) -> Tuple[str, str]:
+    eq_index = string.index('=')
+    return string[:eq_index], string[eq_index + 1:]
 
 
 class _FyooSecretParser(ArgumentParser):
@@ -28,33 +66,78 @@ class FyooParser(ArgumentParser):
     will simply tweak the full namespace before it comes back.
     """
 
-    FYOO_CONTEXT_HELP = 'Pass in a json or yaml string. Multi-argument (can pass multiple times)'
-    FYOO_CONTEXT_FORMAT_HELP = 'Context formatter to use. json, yaml, or auto (default: auto)'
-    FYOO_SET_HELP = 'Set a single context variable. Multi-argument (can pass multiple times)'
-    FYOO_JINJA_EXTENSION = 'Add a jinja2 extension to load at runtime. Multi-argument (can pass multiple times)'
+    HELP = {
+        'context': 'Pass in a json or yaml string.',
+        'context_format': 'Context formatter to use. Can be set by environment variable FYOO__CONTEXT_FORMAT.',
+        'set': 'Set a single context variable, i.e. table_name=users.',
+        'jinja_extension': 'Add a jinja2 extension to load at runtime.',
+        'jinja_template_folder': '''Optionally, add a location for jinja2 to load templates from the filesystem.
+        Can be set by environment variable FYOO__JINJA_TEMPLATE_FOLDER.''',
+        'jinja_block_string': '''Jinja block start and end strings for blocks. Can be set
+        by environment variables FYOO__JINJA_BLOCK_STRING__S/E''',
+        'jinja_variable_string': '''Jinja block start and end strings for variables. Can be set
+        by environment variables FYOO__JINJA_VARIABLE_STRING__S/E''',
+        'jinja_comment_string': '''Jinja block start and end strings for comments. Can be set
+        by environment variables FYOO__JINJA_COMMENT_STRING__S/E''',
+    }
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        _F = FyooParser  # Short variable name for local access
         self.fyoo_secret_parser = _FyooSecretParser(parent_parser=self)
         self.fyoo_secret_parser.add_argument(
-            '-fc', '--fyoo-context', action='append', help=FyooParser.FYOO_CONTEXT_HELP)
+            '-c', '--context', action='append', help=_F.HELP['context'])
         self.fyoo_secret_parser.add_argument(
-            '-ff', '--fyoo-context-format', help=FyooParser.FYOO_CONTEXT_FORMAT_HELP)
+            '-f', '--context-format', help=_F.HELP['context_format'], default=os.getenv('FYOO__CONTEXT_FORMAT', 'json'))
         self.fyoo_secret_parser.add_argument(
-            '-fs', '--fyoo-set', action='append', type=fyoo_util.set_type, help=FyooParser.FYOO_SET_HELP)
+            '-s', '--set', action='append', type=_set_type, help=_F.HELP['set'])
         self.fyoo_secret_parser.add_argument(
-            '-fj', '--fyoo-jinja-extension', action='append', help=FyooParser.FYOO_JINJA_EXTENSION)
+            '-je', '--jinja-extension', action='append', help=_F.HELP['jinja_extension'])
+        self.fyoo_secret_parser.add_argument(
+            '-jtf', '--jinja-template-folder', help=_F.HELP['jinja_template_folder'],
+            default=os.getenv('FYOO__JINJA_TEMPLATE_FOLDER'))
+        self.fyoo_secret_parser.add_argument(
+            '-jbs', '--jinja-block-string', nargs=2, help=_F.HELP['jinja_block_string'],
+            default=[os.getenv('FYOO__JINJA_BLOCK_STRING__S', '{%'),
+                     os.getenv('FYOO__JINJA_BLOCK_STRING__E', '%}')])
+        self.fyoo_secret_parser.add_argument(
+            '-jvs', '--jinja-variable-string', nargs=2, help=_F.HELP['jinja_variable_string'],
+            default=[os.getenv('FYOO__JINJA_VARIABLE_STRING__S', r'{{'),
+                     os.getenv('FYOO__JINJA_VARIABLE_STRING__E', r'}}')])
+        self.fyoo_secret_parser.add_argument(
+            '-jcs', '--jinja-comment-string', nargs=2, help=_F.HELP['jinja_comment_string'],
+            default=[os.getenv('FYOO__JINJA_COMMENT_STRING__S', '{#'),
+                     os.getenv('FYOO__JINJA_COMMENT_STRING__E', '#}')])
+
 
     def parse_known_args(self, args=None, namespace=None):
         secret_known_args, secret_unknown_args = \
             self.fyoo_secret_parser.parse_known_args(args=args, namespace=namespace)
 
-        jinja_env = jinja2.Environment()
-        jinja_env.add_extension(fyoo_template.FyooDatetimeExtension)
-        jinja_env.add_extension(fyoo_template.FyooEnvExtension)
-        jinja_env.add_extension(fyoo_template.FyooThrowExtension)
-        if secret_known_args.fyoo_jinja_extension:
-            for fyoo_jinja_extension in secret_known_args.fyoo_jinja_extension:
+        loader = None \
+                if secret_known_args.jinja_template_folder is None \
+                else jinja2.FileSystemLoader(searchpath=secret_known_args.jinja_template_folder)
+        jinja_env = jinja2.Environment(
+            block_start_string=secret_known_args.jinja_block_string[0],
+            block_end_string=secret_known_args.jinja_block_string[1],
+            variable_start_string=secret_known_args.jinja_variable_string[0],
+            variable_end_string=secret_known_args.jinja_variable_string[1],
+            comment_start_string=secret_known_args.jinja_comment_string[0],
+            comment_end_string=secret_known_args.jinja_comment_string[1],
+            loader=loader,
+        )
+
+        jinja_env.globals.update({
+            attr_name: getattr(fyoo_attributes, attr_name)
+            for attr_name in fyoo_attributes.__all__
+        })
+        jinja_env.filters.update({
+            attr_name: getattr(fyoo_filters, attr_name)
+            for attr_name in fyoo_filters.__all__
+        })
+
+        if secret_known_args.jinja_extension:
+            for fyoo_jinja_extension in secret_known_args.jinja_extension:
                 jinja_env.add_extension(fyoo_jinja_extension)
 
         # Remove actions from current parser, as they're passed to fyoo inner secret-parser
@@ -64,14 +147,11 @@ class FyooParser(ArgumentParser):
             if action.dest in secret_action_dests:
                 self._remove_action(action)
 
-        template_context = fyoo_util.generate_fyoo_context(
-            secret_known_args.fyoo_context_format,
-            secret_known_args.fyoo_context,
-            secret_known_args.fyoo_set,
+        template_context = _generate_fyoo_context(
+            secret_known_args.context_format,
+            secret_known_args.context,
+            secret_known_args.set,
         )
-        if secret_known_args.fyoo_set:
-            for key, value in secret_known_args.fyoo_set:
-                template_context[key] = value
         jinja_env.globals.update(template_context)
 
         known_args, unknown_args = super().parse_known_args(

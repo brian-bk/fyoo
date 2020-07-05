@@ -3,153 +3,91 @@
 Usage
 =====
 
-Examples
---------
+Context
+-------
 
-Context Formatter
-`````````````````
+Passing Dictionaries
+````````````````````
 
-Set common context variables with auto, json, or yaml format.
+Set common context variables with json or yaml format.
+The default context format is json.
 
 .. code-block:: bash
 
-   # auto will attempt different context formats
-   fyoo --fyoo-context='a: A' \
+   fyoo --context='{"a":"A"}' \
      -- \
    echo '{{ a }}'
    # A
 
-   # but you can always force a particular one
-   fyoo --fyoo-context='a: A' --fyoo-context-format=yaml \
+   fyoo --context='a: A' --context-format=yaml \
      -- \
    echo '{{ a }}'
    # A
 
-   fyoo --fyoo-context='a: A' --fyoo-context-format=json \
-     -- \
-   echo '{{ a }}'
-   # json.decoder.JSONDecodeError
-
-   fyoo --fyoo-context='{"a":"A"}' --fyoo-context-format=json \
-     -- \
-   echo '{{ a }}'
-   # A
 
 Context Priority
 ````````````````
 
 Context dictionaries can be passed multiple times, with latest
-overriding preceding contexts. In addition, ``--fyoo-set`` will
-have higher priority than ``--fyoo-context``.
+overriding preceding contexts. In addition, ``--set`` will
+have higher priority than ``--context``.
 
 Priority:
 
-#. Latest ``--fyoo-set`` flag (Highest priority)
-#. Earliest ``--fyoo-set`` flag
-#. Latest ``--fyoo-context`` flag
-#. Earliest ``--fyoo-context`` flag (Lowest priority)
+#. Latest ``--set`` flag (Highest priority)
+#. Earliest ``--set`` flag
+#. Latest ``--context`` flag
+#. Earliest ``--context`` flag (Lowest priority)
 
-.. code-block:: bash
+.. code-block:: console
 
-   fyoo \
-     --fyoo-set=p=higher \
-     --fyoo-context='{"p":"lowest"}' \
-     --fyoo-set=p=highest \
-     --fyoo-context='{"p":"lower"}' \
+   $ fyoo \
+     --set=p=higher \
+     --context='{"p":"lowest"}' \
+     --set=p=highest \
+     --context='{"p":"lower"}' \
      -- \
    echo '{{ p }}'
-   # highest
+   highest
+
+Templating
+----------
+
+Jinja Controls
+``````````````
+
+There are several jinja controls that allow heavy customization to
+how Fyoo's jinja templating works, if desired. Many of these have
+corresponding environment variables, in the expectation of setting
+them in a Dockerfile.
+
+For example, ``FYOO__JINJA_TEMPLATE_FOLDER`` can be really powerful
+in setting the location of ``-jtf/--jinja-template-folder`` at
+container build time.
+
+.. literalinclude:: Dockerfile
+   :language: dockerfile
+   :caption: docs/Dockerfile
+   :name: dockerfile
+
+.. code-block:: console
+
+   $ docker build . -f docs/Dockerfile -t fyoo-example
+   $ docker run fyoo-example \
+       fyoo --dry-run --set table=customer \
+         -- \
+       sqlite3 '{% include "count.sql.jinja" %}'
+   ["sqlite3", "\nselect count(*) as c\nfrom customer"]
+
+Other jinja controls such as extensions and block string settings
+are in :doc:`cli`.
 
 
-Built-in Templating
--------------------
+Built-in Reference
+``````````````````
 
-Datetime Helpers
-````````````````
+.. automodule:: fyoo.template.attributes
+   :members:
 
-Also see :py:class:`fyoo.template.FyooDatetimeExtension`.
-
-date()
-++++++
-
-Print a timestamp in specified timezone and format.
-
-.. code-block:: bash
-
-   fyoo -- echo '{{ date() }}'
-   # 2020-01-01
-   fyoo -- echo 'we all miss {{ date(tz="EST", fmt="%Y%m%d") }}'
-   # we all miss 20191231
-
-dt()
-++++
-
-Alias for `date()`_.
-
-raw_datetime
-++++++++++++
-
-The actual ``datetime.datetime`` object. Work with it however
-you would like.
-
-
-Environment Helpers
-```````````````````
-
-Helpers to environment variables (and maybe later
-more 'environmenty' things).
-
-Also see :py:class:`fyoo.template.FyooEnvExtension`.
-
-getenv()
-++++++++
-
-Pass through to ``os.getenv(*args, **kwargs)``.
-
-.. code-block::
-
-   fyoo -- echo '{{ getenv("USER") }}'
-   # acooluser
-
-
-.. code-block::
-
-   fyoo -- echo '{{ getenv("SOMEVAR", "thatwasntthere") }}'
-   # thatwasntthere
-
-Throw Helpers
-`````````````
-
-Extension to throw/raise an exception from a template.
-
-Also see :py:class:`fyoo.template.FyooThrowExtension`.
-
-throw()
-+++++++
-
-"Throw" (raise) an exception.
-
-.. code-block:: sql
-   :caption: count.tpl.sql
-   :name: count-tpl-sql
-
-   {%- if not table %}
-     {{ throw("no 'table' provided :(") }}
-   {%- endif %}
-
-   select count(*)
-   from {{ table }}
-
-If you were to call fyoo with this template:
-
-.. code-block:: bash
-
-   fyoo -- echo "$(cat count.tpl.sql)"
-   # fyoo.exception.FyooTemplateException: no 'table' provided :(
-
-Complete CLI Reference
-----------------------
-
-.. argparse::
-   :ref: fyoo.cli.get_parser
-   :prog: fyoo
+.. automodule:: fyoo.template.filters
+   :members:

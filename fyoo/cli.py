@@ -1,5 +1,7 @@
 import argparse
+import json
 import os
+import shutil
 import sys
 from typing import Optional, List, Sequence, Text
 
@@ -10,28 +12,42 @@ class CliSingleton:
 
     __instance = None
 
-    PARSER_DESCRIPTION = '''
+    DESCRIPTION = '''
     This utility wraps around a command, and templates in context to
     the latter command's arguments. The child process will replace
     the fyoo/python process.
     '''.strip()
-    PARSER_EXEC_HELP = '''
-    Execute a subcommand. The subcommand will spawn a child process that
-    will become a parent (implemented by ``os.execvp``).
-    '''.strip()
-    PARSER_EXEC_COMMAND_HELP = 'Enter any number of arguments as a command'
+    HELP = {
+        'exec': '''
+        Execute a subcommand. The subcommand will spawn a child process that
+        will become a parent (implemented by ``os.execvp``).
+        '''.strip(),
+        'command': 'Enter any number of arguments as a command.',
+        'dry_run': 'Do not actually kick off command.',
+        'verbose': 'Show the command before running it.',
+    }
 
     def __init__(self):
-        self.parser = FyooParser('fyoo', description=CliSingleton.PARSER_DESCRIPTION)
+        _C = CliSingleton
+        self.parser = FyooParser(
+            'fyoo', description=_C.DESCRIPTION,
+            formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, width=120))
+        self.parser.add_argument('-v', '--verbose', action='store_true', default=False, help=_C.HELP['verbose'])
+        self.parser.add_argument('-dr', '--dry-run', action='store_true', default=False, help=_C.HELP['dry_run'])
         subparsers = self.parser.add_subparsers(parser_class=argparse.ArgumentParser)
         subparsers.required = True
-        exec_parser = subparsers.add_parser('--', help=CliSingleton.PARSER_EXEC_HELP)
+        exec_parser = subparsers.add_parser('--', help=_C.HELP['exec'])
         exec_parser.set_defaults(callback=self.exec)
-        exec_parser.add_argument('command', nargs=argparse.REMAINDER, help=CliSingleton.PARSER_EXEC_COMMAND_HELP)
+        exec_parser.add_argument('command', nargs=argparse.REMAINDER, help=_C.HELP['command'])
 
     # pylint: disable=no-self-use
-    def exec(self, command: List[str]):
-        os.execvp(command[0], command)
+    def exec(self, dry_run: bool, verbose: bool, command: List[str]):
+        if dry_run or verbose:
+            print(json.dumps(command))
+        if not dry_run:
+            if shutil.which(command[0]) is None:
+                self.parser.error(f"Executable '{command[0]}' does not exist")
+            os.execvp(command[0], command)
 
     def main(self, args: Sequence[Text]) -> None:
         try:

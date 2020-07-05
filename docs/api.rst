@@ -1,14 +1,13 @@
 API
 ===
 
-.. autoclass:: fyoo.parser.FyooParser
+The API should be considered unstable at this time. This document
+is just to surface internals while Fyoo is a newer library. For now,
+Fyoo's CLI is the target application interface.
 
-.. autoclass:: fyoo.template.FyooDatetimeExtension
+
+.. automodule:: fyoo.exception
    :members:
-   :exclude-members: parse
-.. autoclass:: fyoo.template.FyooEnvExtension
+
+.. automodule:: fyoo.parser
    :members:
-   :exclude-members: parse
-.. autoclass:: fyoo.template.FyooThrowExtension
-   :members:
-   :exclude-members: parse
