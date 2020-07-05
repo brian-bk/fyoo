@@ -15,9 +15,9 @@ flow code is code you don't have to write.
 Installation
 ------------
 
-.. code-block:: console
+.. code-block:: bash
 
-   $ pip install fyoo
+   pip install fyoo
 
 Basic Usage
 -----------
@@ -29,16 +29,16 @@ Fyoo allows you to inject context into shell arguments in a few
 ways, ``--fyoo-set`` being the simplest and easiest to get started
 with.
 
-.. code-block:: console
+.. code-block:: bash
    
-   $ fyoo \
+   fyoo \
      --set table=Employee \
      -- \
    sqlite3 \
      'examples/Chinook_Sqlite.sqlite' \
      'select * from {{ table }} where date(HireDate) < "{{ date() }}"' \
      -csv -header
-   ... csv results
+   # ... csv results
 
 This goes further than simple bash replacement, because you have
 the full template power of jinja2 between when arguments are
@@ -65,9 +65,9 @@ fyoo renders the template before passing it to sqllite3 subcommand.
 The ``-v/--verbose`` flag will show the executable before running
 it.
 
-.. code-block:: console
+.. code-block:: bash
 
-   $ fyoo \
+   fyoo \
      --verbose \
      --jinja-template-folder ./tests/sql \
      --set table=Employee \
@@ -77,8 +77,8 @@ it.
      'examples/Chinook_Sqlite.sqlite' \
      '{% include "count.sql.jinja" %}' \
      -csv
-   ["sqlite3", "examples/Chinook_Sqlite.sqlite", "\nselect count(*) as c\nfrom Employee\nwhere (lower(Title) like \"%sales%\")", "-csv"]
-   4
+   # ["sqlite3", "examples/Chinook_Sqlite.sqlite", "\nselect count(*) as c\nfrom Employee\nwhere (lower(Title) like \"%sales%\")", "-csv"]
+   # 4
 
 .. warning::
 
