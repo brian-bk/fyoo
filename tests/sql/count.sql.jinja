@@ -1,0 +1,8 @@
+{%- if not table %}
+  {{ throw("'table' required") }}
+{%- endif %}
+select count(*) as c
+from {{ table }}
+{%- if condition %}
+where ({{ condition }})
+{%- endif %}
