@@ -3,10 +3,7 @@ omit =
   env/*
   venv/*
   tests/*
-  fyoo/ext/mysql/*
-  fyoo/cli.py
-  fyoo/parser.py
-  fyoo/*/__init__.py
+  fyoo/__main__.py
   setup.py
 
 source =
