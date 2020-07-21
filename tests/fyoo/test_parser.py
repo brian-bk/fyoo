@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 from jinja2.ext import Extension
@@ -151,3 +153,55 @@ def test_file_loaded_template_doesnt_exist():
             '--set=table=customers',
             r'{% include "i-dont-exist.sql.jinja" %}',
         ])
+
+
+def test_implicit_type_boolean_true():
+    p = FyooParser()
+    p.add_argument('first_arg')
+    assert p.parse_args([
+        '--set=ist=tRuE',
+        r'{% if ist and ist != "tRuE" %}shouldbetrue{% else %}{% endif %}',
+    ]).first_arg == 'shouldbetrue'
+
+
+def test_implicit_type_boolean():
+    p = FyooParser()
+    p.add_argument('first_arg')
+    assert p.parse_args([
+        '--set=isf=false',
+        r'{% if isf %}{% else %}shouldbefalse{% endif %}',
+    ]).first_arg == 'shouldbefalse'
+
+
+def test_implicit_type_boolean_dif_cap():
+    p = FyooParser()
+    p.add_argument('first_arg')
+    assert p.parse_args([
+        '--set=isf=fAlSe',
+        r'{% if isf %}{% else %}shouldbefalse{% endif %}',
+    ]).first_arg == 'shouldbefalse'
+
+
+def test_implicit_type_int():
+    p = FyooParser()
+    p.add_argument('first_arg')
+    assert p.parse_args([
+        '--set=isi=3',
+        r'{{ isi + 1 }}',
+    ]).first_arg == '4'
+
+
+def test_implicit_type_float():
+    p = FyooParser()
+    p.add_argument('first_arg')
+    assert p.parse_args([
+        '--set=isi=3.1',
+        r'{{ isi + 1 }}',
+    ]).first_arg == '4.1'
+
+
+def test_set_by_env_var():
+    p = FyooParser()
+    p.add_argument('first_arg')
+    with patch('os.environ', {'FYOO__SET__a': 'somea'}):
+        assert p.parse_args([r'{{ a }}']).first_arg == 'somea'

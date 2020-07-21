@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 import json
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 import os
 
 import jinja2
@@ -10,6 +10,24 @@ from .template import (
     filters as fyoo_filters,
     attributes as fyoo_attributes,
 )
+
+_FYOO_SET_PREFIX = 'FYOO__SET__'
+
+
+def implicit_type(string: str) -> Union[bool, int, float, str]:
+    if string.lower() in {'true', 'false'}:
+        if string.lower() == 'true':
+            return True
+        return False
+    try:
+        return int(string)
+    except ValueError:
+        pass
+    try:
+        return float(string)
+    except ValueError:
+        pass
+    return string
 
 
 def _parse_template_context(context_format: str, context_string: str):
@@ -31,12 +49,16 @@ def _generate_fyoo_context(
         additional_vars: Optional[List[Tuple[str, str]]],
 ) -> dict:
     result_template = dict()
+
+    for key in filter(lambda k: k.startswith(_FYOO_SET_PREFIX) and len(k) > len(_FYOO_SET_PREFIX), os.environ.keys()):
+        result_template[key[len(_FYOO_SET_PREFIX):]] = implicit_type(os.environ[key])
+
     if context_strings:
         for context_string in context_strings:
             result_template.update(_parse_template_context(context_format, context_string))
     if additional_vars:
         for key, value in additional_vars:
-            result_template[key] = value
+            result_template[key] = implicit_type(value)
     return result_template
 
 
@@ -67,9 +89,23 @@ class FyooParser(ArgumentParser):
     """
 
     HELP = {
-        'context': 'Pass in a json or yaml string.',
-        'context_format': 'Context formatter to use. Can be set by environment variable FYOO__CONTEXT_FORMAT.',
-        'set': 'Set a single context variable, i.e. table_name=users.',
+        'context': '''
+Pass in a json or yaml string (multi-argument).
+Can be set a single time by FYOO__CONTEXT.
+'''.strip(),
+        'context_format': '''
+Context formatter to use.
+Can be set by environment variable FYOO__CONTEXT_FORMAT.
+'''.strip(),
+        'set': r'''
+Set a single context variable, i.e. table_name=users.
+
+In addition, set context variables by environment variable
+FYOO__SET__{var_name}={var_value}.
+
+Context variables will try to use implicit types, defaulting
+to string types.
+        '''.strip(),
         'jinja_extension': 'Add a jinja2 extension to load at runtime.',
         'jinja_template_folder': '''Optionally, add a location for jinja2 to load templates from the filesystem.
         Can be set by environment variable FYOO__JINJA_TEMPLATE_FOLDER.''',
@@ -86,7 +122,10 @@ class FyooParser(ArgumentParser):
         _F = FyooParser  # Short variable name for local access
         self.fyoo_secret_parser = _FyooSecretParser(parent_parser=self)
         self.fyoo_secret_parser.add_argument(
-            '-c', '--context', action='append', help=_F.HELP['context'])
+            '-c', '--context', action='append', help=_F.HELP['context'],
+            default=[os.getenv('FYOO__CONTEXT')]
+            if os.getenv('FYOO__CONTEXT')
+            else [])
         self.fyoo_secret_parser.add_argument(
             '-f', '--context-format', help=_F.HELP['context_format'], default=os.getenv('FYOO__CONTEXT_FORMAT', 'json'))
         self.fyoo_secret_parser.add_argument(

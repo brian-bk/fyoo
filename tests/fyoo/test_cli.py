@@ -51,6 +51,19 @@ def test_fyoo_context_bad_format():
         ])
 
 
+def test_fyoo_dry_run_stops(os_execvp):
+    main([
+        f'--dry-run', '--',
+        'echo', '-n', 'hello'
+    ])
+    os_execvp.assert_not_called()
+
+
+def test_fyoo_command_not_exist_error():
+    with pytest.raises(SystemExit):
+        main([ '--', 'idontexistascommand'])
+
+
 def test_double_exec(os_execvp):
     main([f'--', 'echo', '--', '-n', r'{{ a }} {{ date() }}'])
     os_execvp.assert_called_once_with('echo', ['echo', '--', '-n', f' {TODAY_DT_DS}'])
