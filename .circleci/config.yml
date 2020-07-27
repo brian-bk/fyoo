@@ -94,7 +94,11 @@ jobs:
           name: Smoke Test Install
           command: |
             python --version
-            sudo pip3 install .
+            REPO_DIR="${PWD}"
+            cd "$(mktemp -d)"
+            sudo pip3 install "${REPO_DIR}"
+            fyoo --set=lib=fyoo -- pip show '{{ lib }}'
+            python3 -m fyoo -- echo "Today is {{ date() }}"
   deploy:
     docker:
       - image: circleci/python:3.7
