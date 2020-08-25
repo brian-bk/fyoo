@@ -106,11 +106,11 @@ def do_setup():
                 'fyoo = fyoo.cli:main',
             ],
         },
-        python_requires='>=3.7',
+        python_requires='>=3.6',
         cmdclass={
             'verify': VerifyVersionCommand,
             'show_install': ShowInstallExtrasCommand,
-        }
+        },
     )
 
 
