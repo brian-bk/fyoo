@@ -71,23 +71,23 @@ def test_double_exec(os_execvp):
 
 @pytest.mark.subprocess
 def test_double_exec_output():
-    p = subprocess.run(['fyoo', '--', 'echo', '-n', '--', '-n', r'date is {{ date() }}'], capture_output=True, check=True)
+    p = subprocess.run(['fyoo', '--', 'echo', '-n', '--', '-n', r'date is {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     assert (p.stderr.decode(), p.stdout.decode()) == ('', f'-- -n date is {TODAY_DT_DS}')
 
 
 @pytest.mark.subprocess
 def test_fyoo_basic_echo():
-    p = subprocess.run(['fyoo', '--', 'echo', '-n', r'date is {{ date() }}'], capture_output=True, check=True)
+    p = subprocess.run(['fyoo', '--', 'echo', '-n', r'date is {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     assert (p.stderr.decode(), p.stdout.decode()) == ('', f'date is {TODAY_DT_DS}')
 
 
 @pytest.mark.subprocess
 def test_fyoo_echo_pass_context():
-    p = subprocess.run(['fyoo', r'--context={"a":{"b": 333}}', '--', 'echo', '-n', r'{{ a.b }} and {{ date() }}'], capture_output=True, check=True)
+    p = subprocess.run(['fyoo', r'--context={"a":{"b": 333}}', '--', 'echo', '-n', r'{{ a.b }} and {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     assert (p.stderr.decode(), p.stdout.decode()) == ('', f'333 and {TODAY_DT_DS}')
 
 
 @pytest.mark.subprocess
 def test_fyoo_wrapped_bash():
-    p = subprocess.run(['fyoo', r'--context={"a":{"b": 333}}', '--', 'echo', '-n', r'{{ a.b }} and {{ date() }}'], capture_output=True, check=True)
+    p = subprocess.run(['fyoo', r'--context={"a":{"b": 333}}', '--', 'echo', '-n', r'{{ a.b }} and {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     assert (p.stderr.decode(), p.stdout.decode()) == ('', f'333 and {TODAY_DT_DS}')
