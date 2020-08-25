@@ -28,7 +28,10 @@ workflows:
       - deploy:
           requires:
             - build
-            - test-python-install
+            - test-python-3.6
+            - test-python-3.7
+            - test-python-3.8
+            - test-python-latest
           filters:
             tags:
               only:
