@@ -7,7 +7,22 @@ workflows:
             tags:
               only: /.*/
       - test-python-install:
+          name: test-python-3.6
+          version: "3.6"
+          requires:
+            - build
+      - test-python-install:
+          name: test-python-3.7
           version: "3.7"
+          requires:
+            - build
+      - test-python-install:
+          name: test-python-3.8
+          version: "3.8"
+          requires:
+            - build
+      - test-python-install:
+          name: test-python-latest
           requires:
             - build
       - deploy:
@@ -23,8 +38,12 @@ workflows:
               ignore: /.*/
 jobs:
   build:
+    parameters:
+      version:
+        type: string
+        default: latest
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:<< parameters.version >>
     steps:
       - checkout
       - restore_cache:
@@ -100,8 +119,12 @@ jobs:
             fyoo --set=lib=fyoo -- pip show '{{ lib }}'
             python3 -m fyoo -- echo "Today is {{ date() }}"
   deploy:
+    parameters:
+      version:
+        type: string
+        default: latest
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:<< parameters.version >>
     steps:
       - checkout
       - restore_cache:
