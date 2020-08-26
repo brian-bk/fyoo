@@ -95,9 +95,18 @@ Extra requires
 
 def do_setup():
     setup(
+        author='Brian Kleszyk',
         name='fyoo',
         version=find_version(),
+        description='A simple jinja2-based argument templatizer',
         long_description=read('README.rst'),
+        long_description_content_type='text/x-rst',
+        url='https://github.com/brian-bk/fyoo',
+        project_urls={
+            'Documentation': 'https://fyoo.readthedocs.io',
+            'Source': 'https://github.com/brian-bk/fyoo',
+            'Tracker': 'https://github.com/brian-bk/fyoo/issues',
+        },
         packages=find_packages(exclude=['tests*']),
         install_requires=install_requires(),
         extras_require=extras_require(),
@@ -111,6 +120,14 @@ def do_setup():
             'verify': VerifyVersionCommand,
             'show_install': ShowInstallExtrasCommand,
         },
+        license='MIT',
+        classifiers=[
+            'Intended Audience :: Developers',
+            'License :: OSI Approved :: MIT License',
+            'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
+        ],
     )
 
 
