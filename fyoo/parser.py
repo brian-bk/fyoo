@@ -106,7 +106,8 @@ FYOO__SET__{var_name}={var_value}.
 Context variables will try to use implicit types, defaulting
 to string types.
         '''.strip(),
-        'jinja_extension': 'Add a jinja2 extension to load at runtime.',
+        'jinja_extension': '''Add a jinja2 extension to load at runtime.
+        Can be set by environment variable FYOO__JINJA_EXTENSION, where ':' separates multiple extensions.''',
         'jinja_template_folder': '''Optionally, add a location for jinja2 to load templates from the filesystem.
         Can be set by environment variable FYOO__JINJA_TEMPLATE_FOLDER.''',
         'jinja_block_string': '''Jinja block start and end strings for blocks. Can be set
@@ -131,7 +132,10 @@ to string types.
         self.fyoo_secret_parser.add_argument(
             '-s', '--set', action='append', type=_set_type, help=_F.HELP['set'])
         self.fyoo_secret_parser.add_argument(
-            '-je', '--jinja-extension', action='append', help=_F.HELP['jinja_extension'])
+            '-je', '--jinja-extension', action='append', help=_F.HELP['jinja_extension'],
+            default=[
+                ext for ext in os.getenv('FYOO__JINJA_EXTENSION', '').split(':')
+                if ext])
         self.fyoo_secret_parser.add_argument(
             '-jtf', '--jinja-template-folder', help=_F.HELP['jinja_template_folder'],
             default=os.getenv('FYOO__JINJA_TEMPLATE_FOLDER'))

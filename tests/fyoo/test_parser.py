@@ -45,6 +45,15 @@ class TestJinjaExtension(Extension):
         pass
 
 
+class TestJinjaExtensionAlt(Extension):
+    def __init__(self, environment):
+        super().__init__(environment)
+        environment.globals['testing_alt'] = 'altcool'
+
+    def parse(self, parser):
+        pass
+
+
 def test_jinja_extension():
     p = FyooParser()
     p.add_argument('first_arg')
@@ -52,6 +61,15 @@ def test_jinja_extension():
         '--jinja-extension=tests.fyoo.test_parser.TestJinjaExtension',
         r'{{ testing }}',
     ]).first_arg == '123'
+
+
+def test_jinja_extension_by_arg_and_env_var():
+    with patch('os.environ', {'FYOO__JINJA_EXTENSION': 'tests.fyoo.test_parser.TestJinjaExtensionAlt'}):
+        p = FyooParser()
+        p.add_argument('first_arg')
+        assert p.parse_args([
+            '--jinja-extension=tests.fyoo.test_parser.TestJinjaExtension',
+            r'{{ testing }} {{ testing_alt }}']).first_arg == '123 altcool'
 
 
 def test_parser_non_dictionary():
