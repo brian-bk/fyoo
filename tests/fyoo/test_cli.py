@@ -16,7 +16,6 @@ def test_no_arg_fails(capsys):
         main([])
     out: CaptureResult = capsys.readouterr()
     assert e.value.code == 2
-    assert 'Please provide a subcommand' in out.err
 
 
 def test_unknown_arg_fails(capsys):

@@ -49,12 +49,8 @@ class CliSingleton:
             os.execvp(command[0], command)
 
     def main(self, args: Sequence[Text]) -> None:
-        try:
-            arg_dict = vars(self.parser.parse_args(args))
-        except TypeError as err:
-            if err.args == ('sequence item 0: expected str instance, NoneType found', ):
-                self.parser.error('Please provide a subcommand')
-            raise
+        arg_dict = vars(self.parser.parse_args(args))
+
         callback = arg_dict.pop('callback')
         callback(**arg_dict)
 
