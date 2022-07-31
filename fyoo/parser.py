@@ -48,7 +48,7 @@ def _generate_fyoo_context(
         context_strings: Optional[List[str]],
         additional_vars: Optional[List[Tuple[str, str]]],
 ) -> dict:
-    result_template = dict()
+    result_template = {}
 
     for key in filter(lambda k: k.startswith(_FYOO_SET_PREFIX) and len(k) > len(_FYOO_SET_PREFIX), os.environ.keys()):
         result_template[key[len(_FYOO_SET_PREFIX):]] = implicit_type(os.environ[key])
