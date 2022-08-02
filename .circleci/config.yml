@@ -7,11 +7,6 @@ workflows:
             tags:
               only: /.*/
       - test-python-install:
-          name: test-python-3.6
-          version: "3.6"
-          requires:
-            - build
-      - test-python-install:
           name: test-python-3.7
           version: "3.7"
           requires:
@@ -22,15 +17,26 @@ workflows:
           requires:
             - build
       - test-python-install:
+          name: test-python-3.9
+          version: "3.9"
+          requires:
+            - build
+      - test-python-install:
+          name: test-python-3.10
+          version: "3.10"
+          requires:
+            - build
+      - test-python-install:
           name: test-python-latest
           requires:
             - build
       - deploy:
           requires:
             - build
-            - test-python-3.6
             - test-python-3.7
             - test-python-3.8
+            - test-python-3.9
+            - test-python-3.10
             - test-python-latest
           filters:
             tags:
