@@ -40,7 +40,6 @@ class CliSingleton:
         exec_parser.set_defaults(callback=self.exec)
         exec_parser.add_argument('command', nargs=argparse.REMAINDER, help=_C.HELP['command'])
 
-    # pylint: disable=no-self-use
     def exec(self, dry_run: bool, verbose: bool, command: List[str]):
         if dry_run or verbose:
             print(json.dumps(command))
@@ -56,6 +55,7 @@ class CliSingleton:
             if err.args == ('sequence item 0: expected str instance, NoneType found', ):
                 self.parser.error('Please provide a subcommand')
             raise
+
         callback = arg_dict.pop('callback')
         callback(**arg_dict)
 
@@ -68,6 +68,7 @@ class CliSingleton:
     def instance(cls):
         if cls.__instance is None:
             cls.__instance = cls.__new__(cls, _is_instance_call=True)
+            # pylint: disable=unnecessary-dunder-call
             cls.__instance.__init__()
         return cls.__instance
 
