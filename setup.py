@@ -31,9 +31,8 @@ def find_version():
 
 def install_requires():
     return [
-        'jinja2>=2.10.1, <2.12',
-        'PyYAML>=3.13, <5.4',
-        'MarkupSafe<2.1',
+        'jinja2',
+        'PyYAML',
         'pytz',
     ]
 
