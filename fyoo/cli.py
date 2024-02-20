@@ -22,6 +22,8 @@ class CliSingleton:
         Execute a subcommand. The subcommand will spawn a child process that
         will become a parent (implemented by ``os.execvp``).
         '''.strip(),
+        'print': 'Simply print a template to stdout.',
+        'template': 'Enter a template that will be printed to stdout.',
         'command': 'Enter any number of arguments as a command.',
         'dry_run': 'Do not actually kick off command.',
         'verbose': 'Show the command before running it.',
@@ -39,6 +41,10 @@ class CliSingleton:
         exec_parser = subparsers.add_parser('--', help=_C.HELP['exec'])
         exec_parser.set_defaults(callback=self.exec)
         exec_parser.add_argument('command', nargs=argparse.REMAINDER, help=_C.HELP['command'])
+        print_parser = subparsers.add_parser('print', help=_C.HELP['print'])
+        print_parser.set_defaults(callback=self.print)
+        print_parser.add_argument('template', help=_C.HELP['template'])
+
 
     def exec(self, dry_run: bool, verbose: bool, command: List[str]):
         if dry_run or verbose:
@@ -47,6 +53,12 @@ class CliSingleton:
             if shutil.which(command[0]) is None:
                 self.parser.error(f"Executable '{command[0]}' does not exist")
             os.execvp(command[0], command)
+
+    def print(self, dry_run: bool, verbose: bool, template: str, **_kwargs):
+        if dry_run or verbose:
+            print(json.dumps(template))
+        # template is already rendered by FyooParser internals
+        print(template)
 
     def main(self, args: Sequence[Text]) -> None:
         try:
