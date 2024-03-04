@@ -68,6 +68,20 @@ def test_double_exec(os_execvp):
     os_execvp.assert_called_once_with('echo', ['echo', '--', '-n', f' {TODAY_DT_DS}'])
 
 
+def test_basic_print(capsys):
+    main([f'print', r'{{ a }} {{ date() }}'])
+    captured = capsys.readouterr()
+    assert captured.out == f' {TODAY_DT_DS}'
+    assert captured.err == ''
+
+
+def test_verbose_print(capsys):
+    main([f'-v', 'print', r'{{ a }} {{ date() }}'])
+    captured = capsys.readouterr()
+    assert captured.out == f'" {TODAY_DT_DS}"\n {TODAY_DT_DS}'
+    assert captured.err == ''
+
+
 @pytest.mark.subprocess
 def test_double_exec_output():
     p = subprocess.run(['fyoo', '--', 'echo', '-n', '--', '-n', r'date is {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
