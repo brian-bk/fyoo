@@ -58,7 +58,7 @@ class CliSingleton:
         if dry_run or verbose:
             print(json.dumps(template))
         # template is already rendered by FyooParser internals
-        print(template)
+        print(template, end='')
 
     def main(self, args: Sequence[Text]) -> None:
         try:

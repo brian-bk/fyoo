@@ -90,3 +90,16 @@ def test_fyoo_echo_pass_context():
 def test_fyoo_wrapped_bash():
     p = subprocess.run(['fyoo', r'--context={"a":{"b": 333}}', '--', 'echo', '-n', r'{{ a.b }} and {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     assert (p.stderr.decode(), p.stdout.decode()) == ('', f'333 and {TODAY_DT_DS}')
+
+
+@pytest.mark.subprocess
+def test_fyoo_basic_print():
+    p = subprocess.run(['fyoo', 'print', r'date is {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    assert (p.stderr.decode(), p.stdout.decode()) == ('', f'date is {TODAY_DT_DS}')
+
+
+@pytest.mark.subprocess
+def test_fyoo_verbose_print():
+    p = subprocess.run(['fyoo', '-v', 'print', r'date is {{ date() }}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    assert (p.stderr.decode(), p.stdout.decode()) == ('', f'"date is {TODAY_DT_DS}"\ndate is {TODAY_DT_DS}')
+
